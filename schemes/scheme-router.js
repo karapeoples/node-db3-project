@@ -79,39 +79,39 @@ router.post('/:id/steps', (req, res) => {
 });
 
 router.put('/:id', (req, res) => {
-  const { id } = req.params;
-  const changes = req.body;
+	const { id } = req.params
+	const changes = req.body
 
-  Schemes.findById(id)
-  .then(scheme => {
-    if (scheme) {
-      Schemes.update(changes, id)
-      .then(updatedScheme => {
-        res.json(updatedScheme);
-      });
-    } else {
-      res.status(404).json({ message: 'Could not find scheme with given id' });
-    }
-  })
-  .catch (err => {
-    res.status(500).json({ message: 'Failed to update scheme' });
-  });
-});
+	Schemes.findById(id)
+		.then((scheme) => {
+			if (scheme) {
+				Schemes.update(id,changes).then((updatedScheme) => {
+					res.json(updatedScheme)
+				})
+			} else {
+				res.status(404).json({ message: 'Could not find scheme with given id' })
+			}
+		})
+		.catch((err) => {
+			res.status(500).json({ message: 'Failed to update scheme' })
+		})
+})
 
-router.delete('/:id', (req, res) => {
-  const { id } = req.params;
-
-  Schemes.remove(id)
-  .then(deleted => {
-    if (deleted) {
-      res.json({ removed: deleted });
-    } else {
-      res.status(404).json({ message: 'Could not find scheme with given id' });
-    }
-  })
-  .catch(err => {
-    res.status(500).json({ message: 'Failed to delete scheme' });
-  });
-});
+router.delete('/:id',  (req, res) => {
+	const { id } = req.params
+	Schemes.findById(id)
+		.then((scheme) => {
+			scheme
+				? Schemes.remove(id).then((deleted) => {
+						deleted
+							? res.status(200).json({ success: `Account with ID ${id} has been removed`, info: scheme })
+							: res.status(400).json({ message: 'That scheme does not exist' })
+				  })
+				: null
+		})
+		.catch((err) => {
+			res.status(500).json({ message: 'Failed to delete scheme' })
+		})
+})
 
 module.exports = router;
